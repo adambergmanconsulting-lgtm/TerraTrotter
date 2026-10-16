@@ -28,6 +28,19 @@ export function viewWindow(view: MapView, width: number, height: number) {
   }
 }
 
+export interface PinchSample {
+  distance: number
+  x: number
+  y: number
+}
+
+/** Zoom from the change in distance between two fingers, then follow their midpoint. */
+export function pinchZoom(view: MapView, previous: PinchSample, next: PinchSample): MapView {
+  if (previous.distance < 8 || next.distance < 8) return view
+  const zoomed = zoomAt(view, previous.x, previous.y, next.distance / previous.distance)
+  return panBy(zoomed, next.x - previous.x, next.y - previous.y)
+}
+
 export function panBy(view: MapView, dx: number, dy: number): MapView {
   if (view.scale <= MIN_ZOOM) return view
   return { ...view, x: view.x + dx, y: view.y + dy }

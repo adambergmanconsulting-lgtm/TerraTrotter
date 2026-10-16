@@ -1,6 +1,6 @@
 import { LocateFixed, Minus, Plus } from 'lucide-react'
 import { useEffect, useRef, useState, type PointerEvent } from 'react'
-import { clampPan, panBy, resetView, viewWindow, zoomAt, type MapView } from '../domain/mapZoom'
+import { clampPan, panBy, pinchZoom, resetView, viewWindow, zoomAt, type MapView, type PinchSample } from '../domain/mapZoom'
 import { useMapProjection } from '../hooks/useMapProjection'
 import type { PinMark } from '../hooks/useQuizEngine'
 import type { Country } from '../types/country'
@@ -20,6 +20,9 @@ interface MapViewerProps {
 export function MapViewer({ topology, countries, continent, target, pinMark, picked, onPick }: MapViewerProps) {
   const frame = useRef<HTMLDivElement>(null)
   const drag = useRef<{ x: number; y: number; originX: number; originY: number; panning: boolean } | null>(null)
+  const pointers = useRef(new Map<number, { x: number; y: number }>())
+  const pinch = useRef<PinchSample | null>(null)
+  const pinching = useRef(false)
   const [size, setSize] = useState({ width: 640, height: 420 })
   const [view, setView] = useState<MapView>(resetView)
   const shapes = useMapProjection(topology, countries, continent, size.width, size.height)
@@ -61,7 +64,42 @@ export function MapViewer({ topology, countries, continent, target, pinMark, pic
     setView((current) => clampPan(zoomAt(current, size.width / 2, size.height / 2, factor), size.width, size.height))
   }
 
+  function localPoint(clientX: number, clientY: number, rect: DOMRect) {
+    return {
+      x: ((clientX - rect.left) / rect.width) * size.width,
+      y: ((clientY - rect.top) / rect.height) * size.height,
+    }
+  }
+
+  function pinchSample(rect: DOMRect): PinchSample | null {
+    const points = [...pointers.current.values()]
+    if (points.length < 2) return null
+    const [first, second] = points
+    const start = localPoint(first.x, first.y, rect)
+    const end = localPoint(second.x, second.y, rect)
+    return {
+      distance: Math.hypot(end.x - start.x, end.y - start.y),
+      x: (start.x + end.x) / 2,
+      y: (start.y + end.y) / 2,
+    }
+  }
+
   function movePointer(event: PointerEvent<HTMLDivElement>) {
+    if (!pointers.current.has(event.pointerId)) return
+    pointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY })
+    const rect = event.currentTarget.getBoundingClientRect()
+    if (pointers.current.size >= 2) {
+      const next = pinchSample(rect)
+      const previous = pinch.current
+      if (next && previous) {
+        setView((current) => clampPan(pinchZoom(current, previous, next), size.width, size.height))
+      }
+      pinch.current = next
+      pinching.current = true
+      drag.current = null
+      return
+    }
+    if (pinching.current) return
     const start = drag.current
     if (!start) return
     if (!start.panning) {
@@ -70,7 +108,6 @@ export function MapViewer({ topology, countries, continent, target, pinMark, pic
       start.panning = true
       event.currentTarget.setPointerCapture(event.pointerId)
     }
-    const rect = event.currentTarget.getBoundingClientRect()
     const dx = ((event.clientX - start.x) / rect.width) * size.width
     const dy = ((event.clientY - start.y) / rect.height) * size.height
     start.x = event.clientX
@@ -101,11 +138,29 @@ export function MapViewer({ topology, countries, continent, target, pinMark, pic
   }
 
   function releasePointer(event: PointerEvent<HTMLDivElement>) {
+    pointers.current.delete(event.pointerId)
+    const wasPinch = pinching.current
+    if (pointers.current.size < 2) pinch.current = null
+    if (pointers.current.size === 0) pinching.current = false
     const start = drag.current
     drag.current = null
-    if (!start || start.panning) return
+    if (wasPinch || !start || start.panning) return
     const cca3 = countryAt(event.clientX, event.clientY)
     if (cca3) onPick(cca3)
+  }
+
+  function beginPointer(event: PointerEvent<HTMLDivElement>) {
+    if (event.button !== 0) return
+    if (event.target instanceof Element && event.target.closest('button')) return
+    pointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY })
+    if (pointers.current.size >= 2) {
+      drag.current = null
+      pinching.current = true
+      for (const id of pointers.current.keys()) event.currentTarget.setPointerCapture(id)
+      pinch.current = pinchSample(event.currentTarget.getBoundingClientRect())
+      return
+    }
+    drag.current = { x: event.clientX, y: event.clientY, originX: event.clientX, originY: event.clientY, panning: false }
   }
 
   return (
@@ -117,13 +172,10 @@ export function MapViewer({ topology, countries, continent, target, pinMark, pic
       <div
         ref={frame}
         className="relative touch-none overflow-hidden rounded-3xl bg-[#d5ebe4] shadow-inner"
-        onPointerDown={(event) => {
-          if (event.button !== 0) return
-          if (event.target instanceof Element && event.target.closest('button')) return
-          drag.current = { x: event.clientX, y: event.clientY, originX: event.clientX, originY: event.clientY, panning: false }
-        }}
+        onPointerDown={beginPointer}
         onPointerMove={movePointer}
         onPointerUp={releasePointer}
+        onPointerCancel={releasePointer}
       >
         <svg
           viewBox={`${mapWindow.x} ${mapWindow.y} ${mapWindow.width} ${mapWindow.height}`}
@@ -162,7 +214,7 @@ export function MapViewer({ topology, countries, continent, target, pinMark, pic
           </button>
         </div>
       </div>
-      <p className="text-sm text-tide">Scroll to zoom, drag to move.</p>
+      <p className="text-sm text-tide">Pinch or scroll to zoom, drag to move.</p>
     </section>
   )
 }

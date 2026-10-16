@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { clampPan, resetView, viewWindow, zoomAt } from './mapZoom'
+import { clampPan, pinchZoom, resetView, viewWindow, zoomAt } from './mapZoom'
 
 describe('zoomAt', () => {
   it('keeps the point under the cursor fixed while zooming in', () => {
@@ -24,6 +24,13 @@ describe('zoomAt', () => {
     const localY = window.y + (80 / 500) * window.height
     expect(localX).toBeCloseTo((100 - view.x) / view.scale)
     expect(localY).toBeCloseTo((80 - view.y) / view.scale)
+  })
+
+  it('keeps the pinch midpoint on the same map point while the fingers spread', () => {
+    const next = pinchZoom(resetView(), { distance: 100, x: 200, y: 150 }, { distance: 200, x: 220, y: 160 })
+    expect(next.scale).toBe(2)
+    expect((220 - next.x) / next.scale).toBeCloseTo(200)
+    expect((160 - next.y) / next.scale).toBeCloseTo(150)
   })
 
   it('does not pan the unzoomed map off the frame', () => {

@@ -8,7 +8,7 @@
 - Pinpoint checks the clicked polygon against `country.cca3`.
 - Trivia is built only from `public/data/countries.json`. No network calls during a round.
 - Progress is `localStorage` key `terratrotter.progress.v1`. Answer rates by question type live in `terratrotter.answers.v1`. There are no accounts.
-- Map clip boxes live in `src/domain/mapGeometry.ts`. The player can zoom and drag that map.
+- Map clip boxes live in `src/domain/mapGeometry.ts`. The player zooms with the wheel, a two-finger pinch, or the buttons, and drags to pan.
 - Flag choices use `public/flags/{cca2}.svg`, not emoji.
 
 ## Round
