@@ -1,0 +1,7 @@
+{
+  "mode": "queued",
+  "tool": "knip",
+  "owner": "host-maintainer",
+  "due": "2026-12-16",
+  "notes": "TerraTrotter: switch mode to knip once the quiz surface settles. Until then the clock is this file."
+}

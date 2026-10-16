@@ -1,0 +1,47 @@
+{
+  "name": "terratrotter",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Static geography quiz: map pinpoint and country trivia, hosted on GitHub Pages.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "download-data": "node scripts/download-data.mjs",
+    "test": "vitest run",
+    "check:documentation": "node scripts/railkit/documentation/check-documentation.js",
+    "check:documentation:ownership": "node scripts/railkit/documentation/check-documentation-ownership.js",
+    "check:architecture": "node scripts/railkit/architecture/check-architecture.js",
+    "check:architecture:ratchet": "node scripts/railkit/architecture/check-architecture-ratchet.js",
+    "check:unused-export": "node scripts/railkit/unused-export/check-unused-export.js",
+    "check:railkit": "npm run check:documentation && npm run check:documentation:ownership && npm run check:architecture && npm run check:architecture:ratchet"
+  },
+  "dependencies": {
+    "@fontsource/source-sans-3": "^5.2.9",
+    "@fontsource/source-serif-4": "^5.3.1",
+    "d3-geo": "^3.1.1",
+    "lucide-react": "^0.545.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "topojson-client": "^3.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.14",
+    "@types/d3-geo": "^3.1.0",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@types/topojson-client": "^3.1.5",
+    "@types/topojson-specification": "^1.0.5",
+    "@vitejs/plugin-react": "^5.0.4",
+    "tailwindcss": "^4.1.14",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.10",
+    "vitest": "^3.2.4",
+    "world-atlas": "^2.0.2"
+  }
+}

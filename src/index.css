@@ -1,0 +1,40 @@
+@import 'tailwindcss';
+@import '@fontsource/source-serif-4/600.css';
+@import '@fontsource/source-sans-3/400.css';
+@import '@fontsource/source-sans-3/600.css';
+
+@theme {
+  --font-display: 'Source Serif 4', Georgia, serif;
+  --font-sans: 'Source Sans 3', 'Segoe UI', sans-serif;
+  --color-ink: #14221f;
+  --color-foam: #f6f1e6;
+  --color-tide: #0e4d4a;
+  --color-lagoon: #1f7a72;
+  --color-gold: #e4b15a;
+}
+
+html {
+  background: var(--color-foam);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background:
+    radial-gradient(circle at top left, #f8e7c8 0, transparent 28rem),
+    var(--color-foam);
+}
+
+.font-display {
+  font-weight: 600;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
