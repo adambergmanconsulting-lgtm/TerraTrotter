@@ -1,7 +1,7 @@
 # Skill: adopt
 
 **Owner:** [docs/ADOPTION.md](../../docs/ADOPTION.md)  
-**Also:** [00-QUICK-START.md](../../docs/00-QUICK-START.md), [CODE-FIRST.md](../../docs/CODE-FIRST.md)
+**Also:** [CODE-FIRST.md](../../docs/CODE-FIRST.md). Install manual: [00-QUICK-START.md](https://github.com/adambergmanconsulting-lgtm/railkit/blob/main/kit/docs/00-QUICK-START.md).
 
 **Yardstick:** [governing-priorities.md](../../docs/ops/governing-priorities.md). Efficient pass: one subject sentence; follow ADOPTION sequence as procedure under those ranks; same-turn must/should fixes (no “shall I?”). Stop only on [AGENTS.md stop allowlist](../../AGENTS.md#agent-stop-allowlist).
 
@@ -21,4 +21,4 @@
 - **should:** missing Fast path; Rank **7** queue missing owner or date; UI skipped on UI host without dated TODO; CI not wired to local checks
 - **defer:** every Rank **7** instrument green day one; full vendor apply; living design page; perfect trim (still clock if named ideal)
 
-Exit: ADOPTION exit checks. Reportable status: [ADOPTION.md — When status is reportable](../../docs/ADOPTION.md#when-status-is-reportable). Dogfood: monorepo `examples/first-host`.
+Exit: kit playbook exit checks. This host's record is [ADOPTION.md](../../docs/ADOPTION.md).

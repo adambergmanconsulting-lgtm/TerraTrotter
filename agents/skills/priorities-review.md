@@ -16,7 +16,7 @@ One subject sentence (`priority:` / `instrument:`). One review skill per turn. O
 3. Higher rank wins; rewrite the plan so instruments follow.
 4. Customer depth: use [Customer adjustment](../../docs/ops/governing-priorities.md#customer-adjustment) — **clock** Rank **7** (owner + date) only; never invert **1**–**2**; undated eternal soft skip fails Rank **7**.
 5. Agent editor: auto must/should; stop only on [AGENTS.md stop allowlist](../../AGENTS.md#agent-stop-allowlist).
-6. Point adopt/CI/testing owners; do not paste Prefer/Avoid into the skill. Teaching story: [rank-chain-example.md](../../docs/ops/rank-chain-example.md).
+6. Point adopt/CI/testing owners; do not paste Prefer/Avoid into the skill. Teaching story: [rank-chain-example.md](https://github.com/adambergmanconsulting-lgtm/railkit/blob/main/kit/docs/ops/rank-chain-example.md).
 
 ## Finding shape
 

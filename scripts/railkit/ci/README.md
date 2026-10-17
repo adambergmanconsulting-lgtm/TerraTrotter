@@ -6,7 +6,7 @@ Optional host wiring (Husky, pre-push). Not required for Railkit v1.
 
 - Pre-commit: fast lint / staged checks only
 - Pre-push or CI: `npm run check:railkit`
-- Same commands in [`.github/workflows/railkit-checks.yml`](../../.github/workflows/railkit-checks.yml)
+- Same commands in [`.github/workflows/railkit-checks.yml`](../../../.github/workflows/railkit-checks.yml)
 
 ## Avoid
 

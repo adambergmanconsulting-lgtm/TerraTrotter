@@ -3,7 +3,7 @@
 **Purpose:** Global Prefer/Avoid for repeatable work. Ops, CI, and DNS are examples, not the whole rule.
 
 **Classification:** Meta  
-**Related:** [DOCUMENTATION-PRINCIPLES.md](DOCUMENTATION-PRINCIPLES.md) (why vs how), [ops/integrations-as-code.md](ops/integrations-as-code.md), [ops/ci-flow.md](ops/ci-flow.md), [`scripts/`](../scripts/README.md), [`infra/`](../infra/README.md), [`agents/skills/`](../agents/README.md).
+**Related:** [DOCUMENTATION-PRINCIPLES.md](DOCUMENTATION-PRINCIPLES.md) (why vs how), [ops/integrations-as-code.md](ops/integrations-as-code.md), [ops/ci-flow.md](ops/ci-flow.md), [`scripts/railkit/`](../scripts/railkit/README.md), [`agents/skills/`](../agents/README.md).
 
 ## Fast path (read first)
 
@@ -39,7 +39,7 @@
 | Quality / entropy | Instruments (checks/tools that serve a rank) of [governing-priorities.md](ops/governing-priorities.md) Ranks **4**/**6**; order in [ADOPTION.md](ADOPTION.md#correct-sequence) |
 | Tests | Instrument of Rank **2** — [testing-bar.md](ops/testing-bar.md) (*when*) then Preferred harness owner (*how*) |
 | CI | Same umbrella as local (Ranks **3**/**4**); Rank **7** depth **clocked** (owner + date) |
-| Integrations / hosting / DNS | [`infra/contracts/`](../infra/contracts/) + apply/assert scripts |
+| Integrations / hosting / DNS | [deploy.yml](../.github/workflows/deploy.yml) ; no vendor contract in this repo |
 | Docs structure | Ownership / link / budget checkers |
 | Design tokens | In-repo tokens/components; living yardstick page Rank **7** depth |
 | Agent behavior | [`agents/skills/`](../agents/skills/) + thin adapters; auto must/should; [stop allowlist](../AGENTS.md#agent-stop-allowlist) |

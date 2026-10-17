@@ -2,13 +2,13 @@
 
 Static geography quiz. Players pin countries on a continent map, then answer trivia generated from a frozen country dataset. The site is a Vite bundle for GitHub Pages (`base: /TerraTrotter/`). No server and no runtime API.
 
-**Governing framework:** [Railkit](https://github.com/adambergmanconsulting-lgtm/railkit) `kit/` is installed here (docs, skills, checks). Offer docs from that monorepo are not part of this repo.
+**Governing framework:** [Railkit](https://github.com/adambergmanconsulting-lgtm/railkit) checks and skills are installed here. Offer docs from that monorepo are not part of this repo.
 
 ## Start here by intent
 
 | Intent | Open |
 |--------|------|
-| Install / adopt | [docs/00-QUICK-START.md](docs/00-QUICK-START.md) ; [docs/ADOPTION.md](docs/ADOPTION.md) |
+| Adopt receipt | [docs/ADOPTION.md](docs/ADOPTION.md) |
 | Implement / fix / refactor | [AGENTS.md](AGENTS.md) → [docs/CANONICAL-SOURCES.md](docs/CANONICAL-SOURCES.md) |
 | Quiz rules and data | [docs/product/quiz.md](docs/product/quiz.md) |
 | CI / merge | [docs/ops/ci-flow.md](docs/ops/ci-flow.md) |

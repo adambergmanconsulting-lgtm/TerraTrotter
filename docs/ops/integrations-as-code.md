@@ -4,8 +4,8 @@
 
 ## Fast path (read first)
 
-- Put desired state in [`infra/contracts/`](../../infra/contracts/) (JSON/YAML).
-- Prefer assert/apply scripts under `infra/scripts/` (owned by the host).
+- Put desired state in a contract or workflow. This repo uses [deploy.yml](../../.github/workflows/deploy.yml).
+- Prefer assert/apply scripts under `infra/scripts/` when a vendor portal exists.
 - Docs explain why and link; they do not replace the contract.
 - During adopt: list portal-only steps; script them or give them an owner and due date ([ADOPTION.md](../ADOPTION.md)).
 
@@ -20,4 +20,4 @@
 
 ## Example
 
-See [`example-hosting-contract.json`](../../infra/contracts/example-hosting-contract.json). Replace with the host's cloud and DNS provider. Keep the idea: machine-readable desired state + code that applies or checks it.
+No hosting contract is in this repo. GitHub Pages deploy is [deploy.yml](../../.github/workflows/deploy.yml). Add `infra/contracts/` only if a DNS or vendor portal appears.

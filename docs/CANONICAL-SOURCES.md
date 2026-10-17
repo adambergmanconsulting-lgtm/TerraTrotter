@@ -30,7 +30,7 @@
 | CI / merge commands | [ci-flow.md](ops/ci-flow.md) |
 | Code-first / tribal → code | [CODE-FIRST.md](CODE-FIRST.md) |
 | Doc structure and plain language | [DOCUMENTATION-PRINCIPLES.md](DOCUMENTATION-PRINCIPLES.md) |
-| Integrations / hosting contracts | [integrations-as-code.md](ops/integrations-as-code.md) + [`infra/contracts/`](../infra/contracts/) |
+| Integrations / hosting contracts | [integrations-as-code.md](ops/integrations-as-code.md) ; Pages deploy is [ci-flow.md](ops/ci-flow.md) |
 | Quiz rounds, scoring, saved progress | [quiz.md](product/quiz.md) |
 
 ## Task → one doc

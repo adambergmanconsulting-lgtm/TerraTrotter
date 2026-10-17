@@ -10,7 +10,7 @@ Before first edit: name the task in one sentence; open only that row's owner Fas
 
 ## Compressed intent list
 
-- install / adopt -> docs/00-QUICK-START.md ; docs/ADOPTION.md ; skill adopt
+- adopt receipt -> docs/ADOPTION.md ; skill adopt
 - implement / fix / refactor -> AGENTS.md -> docs/CANONICAL-SOURCES.md (one row)
 - code-first / tribal to code -> docs/CODE-FIRST.md
 - CI / merge -> docs/ops/ci-flow.md ; skill ci-gate

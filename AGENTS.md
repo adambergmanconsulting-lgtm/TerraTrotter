@@ -10,8 +10,8 @@
 
 1. **Truth is code and tests** — governing Rank **2** ([governing-priorities.md](docs/ops/governing-priorities.md), [testing-bar.md](docs/ops/testing-bar.md)). If behavior changes, add or update proof in the same change: open Preferred harness owner from testing-bar Host fill-in when filled, then extend that harness — do not invent a parallel suite. If docs disagree with shipped behavior, fix the docs in the same change (or mark story rows Retired / Partial).
 2. **Read order:** this file → [docs/CANONICAL-SOURCES.md](docs/CANONICAL-SOURCES.md) → **one** owner from the task table → implement.
-3. **Do not browse** [docs/MAP.md](docs/MAP.md) or `docs/wip/` unless you have a named task.
-4. **Repeatable how lives in code** — `scripts/`, `infra/`, workflows, and [agents/skills/](agents/skills/). See [docs/CODE-FIRST.md](docs/CODE-FIRST.md).
+3. **Do not browse** `docs/wip/` unless you have a named task.
+4. **Repeatable how lives in code** — `scripts/`, workflows, and [agents/skills/](agents/skills/). See [docs/CODE-FIRST.md](docs/CODE-FIRST.md).
 
 Words we use: [DOCUMENTATION-PRINCIPLES.md — Plain language](docs/DOCUMENTATION-PRINCIPLES.md#plain-language).
 

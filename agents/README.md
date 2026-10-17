@@ -6,7 +6,6 @@ Canonical skill bodies live here as plain markdown. Editor tools get **thin adap
 |-------|-----------|------|
 | [adopt.md](skills/adopt.md) | [ADOPTION.md](../docs/ADOPTION.md) | Bootstrap host into Railkit |
 | [priorities-review.md](skills/priorities-review.md) | [governing-priorities.md](../docs/ops/governing-priorities.md) | Check vs rank conflicts on a host |
-| [engagement-review.md](skills/engagement-review.md) | [engagement-priorities.md](../../project/consulting/engagement-priorities.md) | Offer / qualify / pitch surface / privacy / commercial hubs (monorepo) |
 | [doc-review.md](skills/doc-review.md) | [DOCUMENTATION-PRINCIPLES.md](../docs/DOCUMENTATION-PRINCIPLES.md) | Ownership / dual homes / caches / plain language / hub routing |
 | [layering-review.md](skills/layering-review.md) | layering + code-quality | Placement / simpler after change / size debt |
 | [stability-review.md](skills/stability-review.md) | [ongoing-engineering-bar.md](../docs/ops/ongoing-engineering-bar.md) | Side writes / leftover forks |

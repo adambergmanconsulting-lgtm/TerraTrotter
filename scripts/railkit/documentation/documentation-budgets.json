@@ -3,7 +3,6 @@
     "hub": {
       "globs": [
         "docs/CANONICAL-SOURCES.md",
-        "docs/00-QUICK-START.md",
         "docs/DOCUMENTATION-PRINCIPLES.md",
         "docs/CODE-FIRST.md",
         "docs/WHY.md",
@@ -29,7 +28,7 @@
       "warn": 300
     },
     "indexes": {
-      "globs": ["docs/MAP.md", "README.md"],
+      "globs": ["README.md"],
       "max": 200,
       "warn": 180
     }
