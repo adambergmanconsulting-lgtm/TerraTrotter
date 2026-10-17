@@ -31,10 +31,12 @@ export function kindWeight(log: AnswerLog | undefined, kind: string): number {
   return 1
 }
 
+export const PINPOINT_OPEN_AREA = 1000
+
 export function pinpointMinArea(log: AnswerLog | undefined): number {
   const stat = log?.kinds.pinpoint
-  if (!stat || stat.asked < 4) return 1000
-  return stat.correct / stat.asked < 0.5 ? 200_000 : 1000
+  if (!stat || stat.asked < 4) return PINPOINT_OPEN_AREA
+  return stat.correct / stat.asked < 0.5 ? 200_000 : PINPOINT_OPEN_AREA
 }
 
 export function loadAnswerLog(): AnswerLog {

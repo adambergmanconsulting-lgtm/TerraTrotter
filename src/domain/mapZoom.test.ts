@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { clampPan, pinchZoom, resetView, viewWindow, zoomAt } from './mapZoom'
+import { clampPan, frameBounds, pinchZoom, resetView, viewWindow, zoomAt } from './mapZoom'
 
 describe('zoomAt', () => {
   it('keeps the point under the cursor fixed while zooming in', () => {
@@ -31,6 +31,17 @@ describe('zoomAt', () => {
     expect(next.scale).toBe(2)
     expect((220 - next.x) / next.scale).toBeCloseTo(200)
     expect((160 - next.y) / next.scale).toBeCloseTo(150)
+  })
+
+  it('frames a country box inside the window', () => {
+    const box = { x: 100, y: 80, width: 40, height: 20 }
+    const view = frameBounds(box, 800, 500)
+    const window = viewWindow(view, 800, 500)
+    expect(view.scale).toBeGreaterThan(1)
+    expect(window.x).toBeLessThan(box.x)
+    expect(window.y).toBeLessThan(box.y)
+    expect(window.x + window.width).toBeGreaterThan(box.x + box.width)
+    expect(window.y + window.height).toBeGreaterThan(box.y + box.height)
   })
 
   it('does not pan the unzoomed map off the frame', () => {

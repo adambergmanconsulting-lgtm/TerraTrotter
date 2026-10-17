@@ -11,6 +11,26 @@ export function resetView(): MapView {
   return { x: 0, y: 0, scale: 1 }
 }
 
+export interface FrameBox {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
+/** Fit a country box in the frame, with a margin so the coast stays visible. */
+export function frameBounds(box: FrameBox, width: number, height: number): MapView {
+  if (box.width <= 0 || box.height <= 0 || width <= 0 || height <= 0) return resetView()
+  const pad = 1.35
+  const scale = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Math.min(width / (box.width * pad), height / (box.height * pad))))
+  if (scale <= MIN_ZOOM) return resetView()
+  const viewWidth = width / scale
+  const viewHeight = height / scale
+  const viewX = box.x + box.width / 2 - viewWidth / 2
+  const viewY = box.y + box.height / 2 - viewHeight / 2
+  return clampPan({ scale, x: -viewX * scale, y: -viewY * scale }, width, height)
+}
+
 export function zoomAt(view: MapView, px: number, py: number, factor: number): MapView {
   const scale = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, view.scale * factor))
   if (scale === MIN_ZOOM) return resetView()

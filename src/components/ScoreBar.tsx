@@ -1,13 +1,15 @@
 import { Flame, Timer } from 'lucide-react'
 import type { Stage } from '../hooks/useQuizEngine'
-import type { ScoreState } from '../domain/scoring'
+import { formatClock, type ScoreState } from '../domain/scoring'
 
 interface ScoreBarProps {
   continent: string
+  difficultyLabel: string
   stage: Stage
   index: number
   total: number
   score: ScoreState
+  elapsed: number
   secondsLeft: number
   secondsLimit: number
   onExit: () => void
@@ -15,10 +17,12 @@ interface ScoreBarProps {
 
 export function ScoreBar({
   continent,
+  difficultyLabel,
   stage,
   index,
   total,
   score,
+  elapsed,
   secondsLeft,
   secondsLimit,
   onExit,
@@ -32,7 +36,9 @@ export function ScoreBar({
       </button>
       <p className="font-display text-xl text-foam">
         {continent}
-        <span className="ml-2 font-sans text-sm font-semibold tracking-wide text-foam/70">{stageLabel}</span>
+        <span className="ml-2 font-sans text-sm font-semibold tracking-wide text-foam/70">
+          {difficultyLabel} · {stageLabel}
+        </span>
       </p>
       <p className="ml-auto flex items-center gap-4 text-sm font-semibold">
         {stage !== 'results' && (
@@ -45,14 +51,17 @@ export function ScoreBar({
           {score.streak}
         </span>
         <span>{score.score} pts</span>
-        {stage !== 'results' && (
+        <span aria-label={`Time ${formatClock(stage === 'results' ? score.seconds : elapsed)}`}>
+          {formatClock(stage === 'results' ? score.seconds : elapsed)}
+        </span>
+        {stage !== 'results' && secondsLimit > 0 && (
           <span className="inline-flex items-center gap-1">
             <Timer className="size-4" aria-hidden />
             {secondsLeft}s
           </span>
         )}
       </p>
-      {stage !== 'results' && (
+      {stage !== 'results' && secondsLimit > 0 && (
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-foam/20" aria-hidden>
           <div className="h-full bg-gold transition-[width]" style={{ width: `${ratio * 100}%` }} />
         </div>

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { loadAnswerLog, recordAnswer, saveAnswerLog } from '../domain/answerLog'
+import { roundLimits, type Difficulty } from '../domain/difficulty'
 import { continentFeatures } from '../domain/mapGeometry'
 import { loadProgress, mergeResult, saveProgress, type ProgressFile } from '../domain/progress'
 import { mulberry32 } from '../domain/random'
@@ -9,26 +10,25 @@ import { buildTriviaRound, type TriviaQuestion } from '../domain/trivia'
 import type { Country } from '../types/country'
 import type { Topology } from 'topojson-specification'
 
-const PIN_SECONDS = 25
-const TRIVIA_SECONDS = 20
-
 export type Stage = 'pinpoint' | 'trivia' | 'results'
 export type PinMark = 'idle' | 'correct' | 'wrong' | 'reveal'
 
 interface EngineInput {
   continent: string
+  difficulty: Difficulty
   countries: readonly Country[]
   topology: Topology
 }
 
-export function useQuizEngine({ continent, countries, topology }: EngineInput) {
+export function useQuizEngine({ continent, difficulty, countries, topology }: EngineInput) {
+  const limits = roundLimits(difficulty)
   const round = useMemo(() => {
     const onMap = continentFeatures(topology, countries, continent).map((item) => item.properties.country)
     const rng = mulberry32(Math.floor(Math.random() * 1_000_000_000))
     const here = countries.filter((country) => country.continent === continent)
     const log = loadAnswerLog()
-    return { pinpoint: samplePinpoint(onMap, rng, log), trivia: buildTriviaRound(here, rng, log) }
-  }, [continent, countries, topology])
+    return { pinpoint: samplePinpoint(onMap, rng, log, difficulty), trivia: buildTriviaRound(here, rng, log) }
+  }, [continent, countries, topology, difficulty])
 
   const [stage, setStage] = useState<Stage>('pinpoint')
   const [index, setIndex] = useState(0)
@@ -36,18 +36,23 @@ export function useQuizEngine({ continent, countries, topology }: EngineInput) {
   const [pinMark, setPinMark] = useState<PinMark>('idle')
   const [picked, setPicked] = useState<string | null>(null)
   const [triviaPick, setTriviaPick] = useState<string | null>(null)
-  const [secondsLeft, setSecondsLeft] = useState(PIN_SECONDS)
+  const [secondsLeft, setSecondsLeft] = useState(limits.pin)
+  const [elapsed, setElapsed] = useState(0)
   const [progress, setProgress] = useState<ProgressFile>(() => loadProgress())
   const settled = useRef(false)
+  const startedAt = useRef(Date.now())
+  const questionStarted = useRef(Date.now())
 
   const currentPin = round.pinpoint[index]
   const currentTrivia = round.trivia[index]
-  const limit = stage === 'pinpoint' ? PIN_SECONDS : TRIVIA_SECONDS
+  const limit = stage === 'pinpoint' ? limits.pin : limits.trivia
 
   function settle(correct: boolean, then: () => void) {
     if (settled.current || stage === 'results') return
     settled.current = true
-    setScore((prev) => applyAnswer(prev, correct))
+    const speedLimit = limit > 0 ? limit : roundLimits('medium')[stage === 'trivia' ? 'trivia' : 'pin']
+    const secondsUsed = Math.max(0, (Date.now() - questionStarted.current) / 1000)
+    setScore((prev) => applyAnswer(prev, correct, { difficulty, secondsUsed, speedLimit }))
     window.setTimeout(then, correct ? 700 : 1200)
   }
 
@@ -78,6 +83,8 @@ export function useQuizEngine({ continent, countries, topology }: EngineInput) {
     settle(correct, () => {
       setTriviaPick(null)
       if (index + 1 >= round.trivia.length) {
+        const seconds = Math.max(0, Math.floor((Date.now() - startedAt.current) / 1000))
+        setScore((prev) => ({ ...prev, seconds }))
         setStage('results')
         return
       }
@@ -87,8 +94,10 @@ export function useQuizEngine({ continent, countries, topology }: EngineInput) {
 
   useEffect(() => {
     if (stage === 'results') return
+    questionStarted.current = Date.now()
     settled.current = false
     setSecondsLeft(limit)
+    if (limit === 0) return
     const started = Date.now()
     const timer = window.setInterval(() => {
       const left = Math.max(0, limit - Math.floor((Date.now() - started) / 1000))
@@ -101,13 +110,21 @@ export function useQuizEngine({ continent, countries, topology }: EngineInput) {
   }, [stage, index, limit, currentPin, currentTrivia])
 
   useEffect(() => {
+    if (stage === 'results') return
+    const clock = window.setInterval(() => {
+      setElapsed(Math.max(0, Math.floor((Date.now() - startedAt.current) / 1000)))
+    }, 200)
+    return () => window.clearInterval(clock)
+  }, [stage])
+
+  useEffect(() => {
     if (stage !== 'results') return
     setProgress((prev) => {
-      const next = mergeResult(prev, continent, score)
+      const next = mergeResult(prev, continent, score, difficulty)
       saveProgress(next)
       return next
     })
-  }, [stage, continent, score])
+  }, [stage, continent, score, difficulty])
 
   return {
     stage,
@@ -120,6 +137,7 @@ export function useQuizEngine({ continent, countries, topology }: EngineInput) {
     triviaPick,
     secondsLeft,
     secondsLimit: limit,
+    elapsed,
     currentPin,
     currentTrivia: currentTrivia as TriviaQuestion | undefined,
     progress,

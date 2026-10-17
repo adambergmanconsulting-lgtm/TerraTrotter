@@ -7,7 +7,7 @@
 - **Conflicts:** [Ranked principles](#ranked-principles) — higher wins.
 - **Copy / labels:** [ui-naming.md](ui-naming.md).
 - **Layout / regions:** [in-page-layout.md](in-page-layout.md).
-- **Living tokens page (optional Rank 7 depth):** [living-design-surface.md](living-design-surface.md).
+- **Living tokens page (optional Rank 7 depth):** [living-design-surface.md](living-design-surface.md). Map skins render at `#/design` from the quiz map. The home-page link and that route appear on the dev server and on localhost only.
 - **Minor domains:** admin vs end-user may use separate Prefer/Avoid or Moments — not dual homes of one UX rule.
 - **Day-to-day:** [Tensions](#tensions) + [Moments](#moments) + [Ship checklist](#ship-checklist).
 

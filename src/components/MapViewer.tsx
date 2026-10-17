@@ -1,7 +1,11 @@
 import { LocateFixed, Minus, Plus } from 'lucide-react'
-import { useEffect, useRef, useState, type PointerEvent } from 'react'
-import { clampPan, panBy, pinchZoom, resetView, viewWindow, zoomAt, type MapView, type PinchSample } from '../domain/mapZoom'
+import { useEffect, useId, useMemo, useRef, useState, type PointerEvent } from 'react'
+import { chartPlateSrc } from '../domain/chartPlates'
+import { mapLabelVisible, projectChartDecor, type MapFocus } from '../domain/mapGeometry'
+import { clampPan, frameBounds, panBy, pinchZoom, resetView, viewWindow, zoomAt, type MapView, type PinchSample } from '../domain/mapZoom'
+import type { MapSkin, OrnamentTone } from '../domain/mapSkin'
 import { useMapProjection } from '../hooks/useMapProjection'
+import { ChartOrnaments } from './ChartOrnaments'
 import type { PinMark } from '../hooks/useQuizEngine'
 import type { Country } from '../types/country'
 import type { Topology } from 'topojson-specification'
@@ -15,9 +19,35 @@ interface MapViewerProps {
   pinMark: PinMark
   picked: string | null
   onPick: (cca3: string) => void
+  skin?: MapSkin
+  hidePrompt?: boolean
+  focus?: MapFocus
+  ornaments?: OrnamentTone
+  frameCompass?: boolean
+  showFlag?: boolean
+  /** Set while studying. Null keeps the whole continent. A code highlights that country and frames it. */
+  frameCca3?: string | null
+  showLabels?: boolean
 }
 
-export function MapViewer({ topology, countries, continent, target, pinMark, picked, onPick }: MapViewerProps) {
+export function MapViewer({
+  topology,
+  countries,
+  continent,
+  target,
+  pinMark,
+  picked,
+  onPick,
+  skin = 'plain',
+  hidePrompt = false,
+  focus,
+  ornaments = 'none',
+  frameCompass = false,
+  showFlag = true,
+  frameCca3,
+  showLabels = false,
+}: MapViewerProps) {
+  const paperId = `paper-${useId().replaceAll(':', '')}`
   const frame = useRef<HTMLDivElement>(null)
   const drag = useRef<{ x: number; y: number; originX: number; originY: number; panning: boolean } | null>(null)
   const pointers = useRef(new Map<number, { x: number; y: number }>())
@@ -25,12 +55,33 @@ export function MapViewer({ topology, countries, continent, target, pinMark, pic
   const pinching = useRef(false)
   const [size, setSize] = useState({ width: 640, height: 420 })
   const [view, setView] = useState<MapView>(resetView)
-  const shapes = useMapProjection(topology, countries, continent, size.width, size.height)
+  const shapes = useMapProjection(topology, countries, continent, size.width, size.height, focus)
+  const decor = useMemo(
+    () =>
+      ornaments === 'none' ? null : projectChartDecor(topology, countries, continent, size.width, size.height, focus),
+    [ornaments, topology, countries, continent, size.width, size.height, focus],
+  )
   const mapWindow = viewWindow(view, size.width, size.height)
+  const aged = skin !== 'plain'
+  const land = aged ? 'fill-[#f4e4c4] hover:fill-[#e7c56a]' : 'fill-[#f4f7f1] hover:fill-[#f6d48a]'
+  const coast = aged ? 'stroke-[#6a4428]' : 'stroke-[#1c3f38]'
 
   useEffect(() => {
+    if (frameCca3 !== undefined) return
     setView(resetView())
-  }, [target.cca3])
+  }, [target.cca3, frameCca3])
+
+  useEffect(() => {
+    if (frameCca3 === undefined) return
+    if (!frameCca3) {
+      setView(resetView())
+      return
+    }
+    const node = frame.current?.querySelector(`path[data-cca3="${frameCca3}"]`)
+    if (!(node instanceof SVGGraphicsElement)) return
+    const box = node.getBBox()
+    setView(frameBounds({ x: box.x, y: box.y, width: box.width, height: box.height }, size.width, size.height))
+  }, [frameCca3, size.width, size.height, shapes.length])
 
   useEffect(() => {
     const node = frame.current
@@ -152,6 +203,8 @@ export function MapViewer({ topology, countries, continent, target, pinMark, pic
   function beginPointer(event: PointerEvent<HTMLDivElement>) {
     if (event.button !== 0) return
     if (event.target instanceof Element && event.target.closest('button')) return
+    event.preventDefault()
+    window.getSelection()?.removeAllRanges()
     pointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY })
     if (pointers.current.size >= 2) {
       drag.current = null
@@ -165,13 +218,15 @@ export function MapViewer({ topology, countries, continent, target, pinMark, pic
 
   return (
     <section className="grid gap-4">
-      <p className="flex items-center gap-3 font-display text-3xl text-ink sm:text-4xl">
-        <FlagMark cca2={target.cca2} className="h-8 w-12 rounded shadow-sm" />
-        Find {target.name.common}
-      </p>
+      {hidePrompt ? null : (
+        <p className="flex items-center gap-3 font-display text-3xl text-ink sm:text-4xl">
+          {showFlag && <FlagMark cca2={target.cca2} className="h-8 w-12 rounded shadow-sm" />}
+          Find {target.name.common}
+        </p>
+      )}
       <div
         ref={frame}
-        className="relative touch-none overflow-hidden rounded-3xl bg-[#d5ebe4] shadow-inner"
+        className={`relative touch-none overflow-hidden rounded-3xl shadow-inner select-none ${aged ? 'bg-[#d7c7a3] shadow-[inset_0_0_48px_rgba(90,60,20,0.28)]' : 'bg-[#d5ebe4]'}`}
         onPointerDown={beginPointer}
         onPointerMove={movePointer}
         onPointerUp={releasePointer}
@@ -183,17 +238,24 @@ export function MapViewer({ topology, countries, continent, target, pinMark, pic
           role="img"
           aria-label={`${continent} map`}
         >
+          {aged && (
+            <filter id={paperId}>
+              <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" />
+            </filter>
+          )}
+          {decor && <ChartOrnaments decor={decor} scale={view.scale} layer="grid" tone={ornaments} />}
           {shapes.map((shape) => {
             const revealed = pinMark === 'reveal' && shape.cca3 === target.cca3
             const correct = pinMark === 'correct' && shape.cca3 === target.cca3
+            const focused = frameCca3 != null && shape.cca3 === frameCca3
             const wrong = pinMark === 'wrong' && shape.cca3 === picked
-            const tone = correct || revealed ? 'fill-[#2f8f55]' : wrong ? 'fill-[#d4533a]' : 'fill-[#f4f7f1] hover:fill-[#f6d48a]'
+            const tone = correct || revealed || focused ? 'fill-[#2f8f55]' : wrong ? 'fill-[#d4533a]' : land
             return (
               <path
                 key={shape.cca3}
                 d={shape.d}
                 data-cca3={shape.cca3}
-                className={`${tone} stroke-[#1c3f38]`}
+                className={`${tone} ${coast}`}
                 pointerEvents="fill"
                 strokeWidth={0.8 / view.scale}
               >
@@ -201,7 +263,49 @@ export function MapViewer({ topology, countries, continent, target, pinMark, pic
               </path>
             )
           })}
+          {showLabels &&
+            shapes.map((shape) => {
+              if (!mapLabelVisible(shape.area, view.scale) && shape.cca3 !== frameCca3) return null
+              const focused = frameCca3 != null && shape.cca3 === frameCca3
+              return (
+                <text
+                  key={`label-${shape.cca3}`}
+                  x={shape.labelX}
+                  y={shape.labelY}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  pointerEvents="none"
+                  className={focused ? 'fill-white' : 'fill-[#1c3f38]'}
+                  style={{ fontSize: 11 / view.scale, fontWeight: 600, paintOrder: 'stroke', stroke: focused ? '#1c3f38' : '#f4f7f1', strokeWidth: 2.5 / view.scale, userSelect: 'none' }}
+                >
+                  {shape.name}
+                </text>
+              )
+            })}
+          {aged && (
+            <rect
+              x={mapWindow.x}
+              y={mapWindow.y}
+              width={mapWindow.width}
+              height={mapWindow.height}
+              filter={`url(#${paperId})`}
+              opacity="0.18"
+              pointerEvents="none"
+            />
+          )}
+          {decor && (
+            <ChartOrnaments
+              decor={decor}
+              scale={view.scale}
+              layer="marks"
+              tone={ornaments}
+              corner={{ x: mapWindow.x + 10 / view.scale, y: mapWindow.y + 10 / view.scale }}
+            />
+          )}
         </svg>
+        {frameCompass && (
+          <img src={chartPlateSrc('compass')} alt="" className="pointer-events-none absolute top-3 left-3 h-14 w-14" />
+        )}
         <div className="absolute right-3 bottom-3 flex gap-2">
           <button type="button" aria-label="Zoom in" onClick={() => zoomBy(1.4)} className="rounded-full bg-white p-2 text-tide shadow">
             <Plus className="size-4" aria-hidden />
