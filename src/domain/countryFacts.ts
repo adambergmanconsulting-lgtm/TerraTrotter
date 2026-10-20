@@ -10,6 +10,11 @@ export interface CountryFacts {
   neighbors: string
   coastline: string
   subregion: string
+  languages: string
+  religions: string
+  currency: string
+  gdp: string
+  gdpPerCapita: string
 }
 
 export function ordinalRank(rank: number): string {
@@ -40,6 +45,24 @@ export function densestPhrase(rank: number, total: number): string {
   return `${ordinalRank(rank)} densest`
 }
 
+export function economyPhrase(rank: number, total: number, kind: 'largest economy' | 'highest GDP per person'): string {
+  if (rank === 1) return kind === 'largest economy' ? 'largest economy' : 'highest GDP per person'
+  if (rank === 2) return `2nd ${kind === 'largest economy' ? 'largest economy' : 'highest GDP per person'}`
+  if (rank === 3) return `3rd ${kind === 'largest economy' ? 'largest economy' : 'highest GDP per person'}`
+  if (rank === total) return kind === 'largest economy' ? 'smallest economy' : 'lowest GDP per person'
+  if (rank === total - 1) return kind === 'largest economy' ? '2nd smallest economy' : '2nd lowest GDP per person'
+  return `${ordinalRank(rank)} ${kind === 'largest economy' ? 'largest economy' : 'highest GDP per person'}`
+}
+
+/** Compact US dollar amounts for study facts. */
+export function moneyUsd(amount: number): string {
+  const abs = Math.abs(amount)
+  if (abs >= 1_000_000_000_000) return `$${(amount / 1_000_000_000_000).toFixed(abs >= 10_000_000_000_000 ? 1 : 2)} trillion`
+  if (abs >= 1_000_000_000) return `$${(amount / 1_000_000_000).toFixed(abs >= 100_000_000_000 ? 0 : 1)} billion`
+  if (abs >= 1_000_000) return `$${number.format(Math.round(amount / 1_000_000))} million`
+  return `$${number.format(Math.round(amount))}`
+}
+
 function rankOf(value: number, values: readonly number[], higherIsBetter: boolean): number {
   const ordered = [...values].sort((a, b) => (higherIsBetter ? b - a : a - b))
   return ordered.indexOf(value) + 1
@@ -51,6 +74,49 @@ function neighborNames(country: Country, peers: readonly Country[]): string[] {
     const name = byCode.get(code)
     return name ? [name] : []
   })
+}
+
+function languageList(country: Country): string {
+  const names = Object.values(country.languages)
+  return names.length > 0 ? names.join(', ') : 'No languages listed'
+}
+
+function religionList(country: Country): string {
+  const rows = country.religions ?? []
+  if (rows.length === 0) return 'No religion listed'
+  return rows
+    .map((row) => (row.share == null ? row.name : `${row.name} ${row.share}%`))
+    .join(', ')
+}
+
+function currencyList(country: Country): string {
+  const rows = Object.values(country.currencies)
+  if (rows.length === 0) return 'No currency listed'
+  return rows
+    .map((row) => {
+      const symbol = row.symbol ? ` (${row.symbol})` : ''
+      return `${row.name}${symbol}`
+    })
+    .join(', ')
+}
+
+function gdpLine(country: Country, peers: readonly Country[]): string {
+  const value = country.economy?.gdpUsd
+  if (value == null) return 'No GDP listed'
+  const ranked = peers.filter((peer) => peer.economy?.gdpUsd != null)
+  const total = ranked.length
+  const rank = rankOf(value, ranked.map((peer) => peer.economy!.gdpUsd), true)
+  const year = country.economy?.year
+  return `${moneyUsd(value)}${year ? ` (${year})` : ''} · ${economyPhrase(rank, total, 'largest economy')} on this map (${rank} of ${total})`
+}
+
+function gdpPerCapitaLine(country: Country, peers: readonly Country[]): string {
+  const value = country.economy?.gdpPerCapitaUsd
+  if (value == null) return 'No GDP per person listed'
+  const ranked = peers.filter((peer) => peer.economy?.gdpPerCapitaUsd != null)
+  const total = ranked.length
+  const rank = rankOf(value, ranked.map((peer) => peer.economy!.gdpPerCapitaUsd!), true)
+  return `${moneyUsd(value)} · ${economyPhrase(rank, total, 'highest GDP per person')} on this map (${rank} of ${total})`
 }
 
 export function countryFacts(country: Country, peers: readonly Country[] = [country]): CountryFacts {
@@ -79,5 +145,10 @@ export function countryFacts(country: Country, peers: readonly Country[] = [coun
         : `${names.length} · ${names.sort((a, b) => a.localeCompare(b)).join(', ')}`,
     coastline: country.landlocked ? 'Landlocked' : 'Has a coast',
     subregion: country.subregion || 'No subregion listed',
+    languages: languageList(country),
+    religions: religionList(country),
+    currency: currencyList(country),
+    gdp: gdpLine(country, peers),
+    gdpPerCapita: gdpPerCapitaLine(country, peers),
   }
 }

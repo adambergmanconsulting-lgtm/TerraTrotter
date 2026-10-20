@@ -5,7 +5,7 @@
 ## Fast path (read first)
 
 - Two stages per continent: map pinpoint, then trivia. Eight questions each when the data allows.
-- Study the map puts country names on the polygons. A click highlights the country, frames it, and fills an info box with ranks on that continent map (population, area, density), neighbors, and coast. Zoom reveals smaller names. Study does not write a score.
+- Study the map puts country names on the polygons. A click highlights the country, frames it, and fills an info box with ranks on that continent map (population, area, density, GDP), neighbors, coast, languages, religions, currency, and GDP per person. Zoom reveals smaller names. Study does not write a score.
 - Pinpoint checks the clicked polygon against `country.cca3`.
 - Trivia is built only from `public/data/countries.json`. No network calls during a round.
 - Progress is `localStorage` key `terratrotter.progress.v1`, stored separately for Easy, Medium, and Hard. Older saves land on Medium. Answer rates by question type live in `terratrotter.answers.v1`. There are no accounts.
@@ -22,4 +22,4 @@
 
 ## Data
 
-`npm run download-data` refreshes `public/data/countries.json` from the public REST Countries v3.1 snapshot, copies `world-atlas` countries-50m to `public/data/world-50m.json`, and saves each flag SVG into `public/flags/`. The live v3 API now requires a key, so the script uses the last public snapshot. The app reads those files at runtime and does not call an API.
+`npm run download-data` refreshes `public/data/countries.json` from the public REST Countries v3.1 snapshot, attaches major religions (Pew-based shares by ISO3 when available, else a dominant-religion name), attaches latest World Bank GDP and GDP per person (current US$), copies `world-atlas` countries-50m to `public/data/world-50m.json`, and saves each flag SVG into `public/flags/`. Set `SKIP_FLAGS=1` to refresh country rows without re-downloading flags. The live v3 API now requires a key, so the script uses the last public snapshot. The app reads those files at runtime and does not call an API.

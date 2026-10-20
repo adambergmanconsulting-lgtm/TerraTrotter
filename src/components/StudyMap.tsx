@@ -64,6 +64,16 @@ export function StudyMap({ continent, countries, topology, onExit }: StudyMapPro
               <dd>{facts.coastline}</dd>
               <dt className="font-semibold text-tide">Subregion</dt>
               <dd>{facts.subregion}</dd>
+              <dt className="font-semibold text-tide">Languages</dt>
+              <dd>{facts.languages}</dd>
+              <dt className="font-semibold text-tide">Religions</dt>
+              <dd>{facts.religions}</dd>
+              <dt className="font-semibold text-tide">Currency</dt>
+              <dd>{facts.currency}</dd>
+              <dt className="font-semibold text-tide">GDP</dt>
+              <dd>{facts.gdp}</dd>
+              <dt className="font-semibold text-tide">GDP per person</dt>
+              <dd>{facts.gdpPerCapita}</dd>
             </dl>
           </>
         ) : (
