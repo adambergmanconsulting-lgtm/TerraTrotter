@@ -34,7 +34,7 @@ export function StudyMap({ continent, countries, topology, onExit }: StudyMapPro
   }
 
   return (
-    <main className="mx-auto grid w-full max-w-5xl gap-6 px-4 py-6">
+    <main className="mx-auto grid w-full max-w-5xl gap-6 px-4 py-6 lg:max-w-7xl">
       <header className="flex flex-wrap items-center gap-3">
         <button type="button" onClick={onExit} className="text-sm font-semibold text-tide underline-offset-2 hover:underline">
           All continents
@@ -42,57 +42,64 @@ export function StudyMap({ continent, countries, topology, onExit }: StudyMapPro
         <h1 className="font-display text-4xl text-ink">{continent}</h1>
         <p className="text-sm font-semibold tracking-wide text-tide uppercase">Study</p>
       </header>
-      <section className="grid gap-3 rounded-3xl bg-white p-5 shadow-sm ring-1 ring-tide/10" aria-live="polite">
-        {selected && facts ? (
-          <>
-            <p className="flex items-center gap-3 font-display text-3xl text-ink">
-              <FlagMark cca2={selected.cca2} className="h-8 w-12 rounded shadow-sm" />
-              {selected.name.common}
-            </p>
-            <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
-              <dt className="font-semibold text-tide">Capital</dt>
-              <dd>{facts.capital}</dd>
-              <dt className="font-semibold text-tide">Population</dt>
-              <dd>{facts.population}</dd>
-              <dt className="font-semibold text-tide">Area</dt>
-              <dd>{facts.area}</dd>
-              <dt className="font-semibold text-tide">Density</dt>
-              <dd>{facts.density}</dd>
-              <dt className="font-semibold text-tide">Neighbors</dt>
-              <dd>{facts.neighbors}</dd>
-              <dt className="font-semibold text-tide">Coast</dt>
-              <dd>{facts.coastline}</dd>
-              <dt className="font-semibold text-tide">Subregion</dt>
-              <dd>{facts.subregion}</dd>
-              <dt className="font-semibold text-tide">Languages</dt>
-              <dd>{facts.languages}</dd>
-              <dt className="font-semibold text-tide">Religions</dt>
-              <dd>{facts.religions}</dd>
-              <dt className="font-semibold text-tide">Currency</dt>
-              <dd>{facts.currency}</dd>
-              <dt className="font-semibold text-tide">GDP</dt>
-              <dd>{facts.gdp}</dd>
-              <dt className="font-semibold text-tide">GDP per person</dt>
-              <dd>{facts.gdpPerCapita}</dd>
-            </dl>
-          </>
-        ) : (
-          <p className="text-ink/80">Click a country on the map. Zoom in to see more names.</p>
-        )}
-      </section>
-      <MapViewer
-        topology={topology}
-        countries={countries}
-        continent={continent}
-        target={shown}
-        pinMark="idle"
-        picked={null}
-        onPick={(cca3) => setSelected(listed.find((country) => country.cca3 === cca3) ?? null)}
-        hidePrompt
-        frameCompass
-        frameCca3={selected?.cca3 ?? null}
-        showLabels
-      />
+      <div className="grid gap-6 lg:grid-cols-[minmax(16rem,22rem)_minmax(0,1fr)] lg:items-start">
+        <section
+          className="grid gap-3 rounded-3xl bg-white p-5 shadow-sm ring-1 ring-tide/10 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto"
+          aria-live="polite"
+        >
+          {selected && facts ? (
+            <>
+              <p className="flex items-center gap-3 font-display text-3xl text-ink">
+                <FlagMark cca2={selected.cca2} className="h-8 w-12 shrink-0 rounded shadow-sm" />
+                {selected.name.common}
+              </p>
+              <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
+                <dt className="font-semibold text-tide">Capital</dt>
+                <dd>{facts.capital}</dd>
+                <dt className="font-semibold text-tide">Population</dt>
+                <dd>{facts.population}</dd>
+                <dt className="font-semibold text-tide">Area</dt>
+                <dd>{facts.area}</dd>
+                <dt className="font-semibold text-tide">Density</dt>
+                <dd>{facts.density}</dd>
+                <dt className="font-semibold text-tide">Neighbors</dt>
+                <dd>{facts.neighbors}</dd>
+                <dt className="font-semibold text-tide">Coast</dt>
+                <dd>{facts.coastline}</dd>
+                <dt className="font-semibold text-tide">Subregion</dt>
+                <dd>{facts.subregion}</dd>
+                <dt className="font-semibold text-tide">Languages</dt>
+                <dd>{facts.languages}</dd>
+                <dt className="font-semibold text-tide">Religions</dt>
+                <dd>{facts.religions}</dd>
+                <dt className="font-semibold text-tide">Currency</dt>
+                <dd>{facts.currency}</dd>
+                <dt className="font-semibold text-tide">GDP</dt>
+                <dd>{facts.gdp}</dd>
+                <dt className="font-semibold text-tide">GDP per person</dt>
+                <dd>{facts.gdpPerCapita}</dd>
+              </dl>
+            </>
+          ) : (
+            <p className="text-ink/80">Click a country on the map. Zoom in to see more names.</p>
+          )}
+        </section>
+        <div className="min-w-0">
+          <MapViewer
+            topology={topology}
+            countries={countries}
+            continent={continent}
+            target={shown}
+            pinMark="idle"
+            picked={null}
+            onPick={(cca3) => setSelected(listed.find((country) => country.cca3 === cca3) ?? null)}
+            hidePrompt
+            frameCompass
+            frameCca3={selected?.cca3 ?? null}
+            showLabels
+          />
+        </div>
+      </div>
     </main>
   )
 }

@@ -5,7 +5,7 @@
 ## Fast path (read first)
 
 - Two stages per continent: map pinpoint, then trivia. Eight questions each when the data allows.
-- Study the map puts country names on the polygons. A click highlights the country, frames it, and fills an info box with ranks on that continent map (population, area, density, GDP), neighbors, coast, languages, religions, currency, and GDP per person. Zoom reveals smaller names. Study does not write a score.
+- Study the map puts country names on the polygons. A click highlights the country, frames it, and fills an info box with ranks on that continent map (population, area, density, GDP), neighbors, coast, languages, religions, currency, and GDP per person. On wide screens the info box sits beside the map and stays in view; on narrow screens it stacks above. Zoom reveals smaller names. Study does not write a score.
 - Pinpoint checks the clicked polygon against `country.cca3`.
 - Trivia is built only from `public/data/countries.json`. No network calls during a round.
 - Progress is `localStorage` key `terratrotter.progress.v1`, stored separately for Easy, Medium, and Hard. Older saves land on Medium. Answer rates by question type live in `terratrotter.answers.v1`. There are no accounts.
